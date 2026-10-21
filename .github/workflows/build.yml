@@ -1,0 +1,26 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # build.sh uses the commit count as the build number
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Package
+        run: ditto -c -k --keepParent build/Soroban.app Soroban.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Soroban
+          path: Soroban.zip
