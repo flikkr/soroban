@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # build.sh uses the commit count as the build number
+
+      - name: Check tag matches VERSION
+        run: |
+          VERSION=$(tr -d '[:space:]' < VERSION)
+          if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match VERSION file (${VERSION}). Expected tag v${VERSION}."
+            exit 1
+          fi
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Package
+        run: ditto -c -k --keepParent build/Soroban.app "Soroban-${GITHUB_REF_NAME}.zip"
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<'EOF'
+          ## Install
+
+          1. Download `Soroban-${{ github.ref_name }}.zip` below and unzip it.
+          2. Move `Soroban.app` to `~/Applications`.
+          3. The app isn't notarized, so macOS will block it the first time. Clear the quarantine flag:
+             ```sh
+             xattr -dr com.apple.quarantine ~/Applications/Soroban.app
+             ```
+          4. Open it: `open ~/Applications/Soroban.app`
+
+          Requires macOS 13 or later.
+          EOF
+          gh release create "${GITHUB_REF_NAME}" "Soroban-${GITHUB_REF_NAME}.zip" \
+            --title "Soroban ${GITHUB_REF_NAME}" \
+            --notes-file notes.md \
+            --generate-notes \
+            --verify-tag
