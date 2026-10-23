@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B2D33"/>
+      <stop offset="1" stop-color="#16171B"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#C98A4B"/>
+      <stop offset="1" stop-color="#8E5A2B"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.45"/>
+      <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.25"/>
+    </linearGradient>
+    <g id="bead">
+      <path d="M-22 0 L-9 -13 L9 -13 L22 0 L9 13 L-9 13 Z"/>
+      <path d="M-22 0 L-9 -13 L9 -13 L22 0 L9 13 L-9 13 Z" fill="url(#shine)"/>
+    </g>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bg)"/>
+  <rect x="96" y="104" width="320" height="304" rx="18" fill="none" stroke="url(#wood)" stroke-width="24"/>
+  <g stroke="#B8B2A7" stroke-width="5" stroke-linecap="round">
+    <line x1="156" y1="120" x2="156" y2="392"/>
+    <line x1="206" y1="120" x2="206" y2="392"/>
+    <line x1="256" y1="120" x2="256" y2="392"/>
+    <line x1="306" y1="120" x2="306" y2="392"/>
+    <line x1="356" y1="120" x2="356" y2="392"/>
+  </g>
+  <rect x="96" y="190" width="320" height="16" fill="url(#wood)"/>
+  <g>
+    <use href="#bead" x="156" y="133" fill="#5C3A21"/>
+    <use href="#bead" x="156" y="219" fill="#34C759"/>
+    <use href="#bead" x="156" y="245" fill="#34C759"/>
+    <use href="#bead" x="156" y="271" fill="#34C759"/>
+    <use href="#bead" x="156" y="379" fill="#5C3A21"/>
+    <use href="#bead" x="206" y="177" fill="#34C759"/>
+    <use href="#bead" x="206" y="219" fill="#34C759"/>
+    <use href="#bead" x="206" y="245" fill="#34C759"/>
+    <use href="#bead" x="206" y="379" fill="#5C3A21"/>
+    <use href="#bead" x="206" y="353" fill="#5C3A21"/>
+    <use href="#bead" x="256" y="133" fill="#5C3A21"/>
+    <use href="#bead" x="256" y="219" fill="#FF9F0A"/>
+    <use href="#bead" x="256" y="379" fill="#5C3A21"/>
+    <use href="#bead" x="256" y="353" fill="#5C3A21"/>
+    <use href="#bead" x="256" y="327" fill="#5C3A21"/>
+    <use href="#bead" x="306" y="177" fill="#FF9F0A"/>
+    <use href="#bead" x="306" y="219" fill="#FF9F0A"/>
+    <use href="#bead" x="306" y="245" fill="#FF9F0A"/>
+    <use href="#bead" x="306" y="271" fill="#FF9F0A"/>
+    <use href="#bead" x="306" y="379" fill="#5C3A21"/>
+    <use href="#bead" x="356" y="177" fill="#FF453A"/>
+    <use href="#bead" x="356" y="379" fill="#5C3A21"/>
+    <use href="#bead" x="356" y="353" fill="#5C3A21"/>
+    <use href="#bead" x="356" y="327" fill="#5C3A21"/>
+    <use href="#bead" x="356" y="301" fill="#5C3A21"/>
+  </g>
+</svg>

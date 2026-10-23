@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/icon.svg" width="128" alt="Soroban icon"></p>
+
 # Soroban
 
 A small macOS menu bar app that shows how much of your [LiteLLM](https://docs.litellm.ai/) budget you've spent.
