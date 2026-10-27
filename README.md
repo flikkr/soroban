@@ -10,6 +10,12 @@ A small macOS menu bar app that shows how much of your [LiteLLM](https://docs.li
 - **Budget alerts**: a notification when you pass 50%, 80%, 90% or 100% of your budget (you choose which).
 - **Settings**: launch at login, refresh interval, connection, alerts, a list of available models with prices, and usage stats.
 
+<p align="center">
+  <img src="assets/screenshot-menu.png" width="357" alt="Soroban menu with spend summary and 7-day chart">
+  &nbsp;
+  <img src="assets/screenshot-stats.png" width="560" alt="Soroban Stats settings tab">
+</p>
+
 Requires macOS 13 or later, and a [LiteLLM proxy](https://docs.litellm.ai/docs/simple_proxy) server with a virtual API key.
 
 ## Install
