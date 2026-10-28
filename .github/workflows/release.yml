@@ -3,6 +3,17 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Which part of the version to bump
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+      version:
+        description: Exact version to release instead (e.g. 1.2.0). Leave empty to use the bump.
+        type: string
+        required: false
 
 permissions: {}
 
@@ -16,28 +27,69 @@ jobs:
         with:
           fetch-depth: 0 # build.sh uses the commit count as the build number
 
-      - name: Check tag matches VERSION
+      - name: Bump VERSION and tag
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          BUMP: ${{ inputs.bump }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          VERSION=$(tr -d '[:space:]' < VERSION)
-          if [ "${GITHUB_REF_NAME}" != "v${VERSION}" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match VERSION file (${VERSION}). Expected tag v${VERSION}."
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
+            echo "::error::Run this workflow from main."
             exit 1
           fi
+          CURRENT=$(tr -d '[:space:]' < VERSION)
+          if [ -n "${INPUT_VERSION}" ]; then
+            NEW="${INPUT_VERSION#v}"
+          else
+            IFS=. read -r MAJOR MINOR PATCH <<< "${CURRENT}"
+            case "${BUMP}" in
+              major) NEW="$((MAJOR + 1)).0.0" ;;
+              minor) NEW="${MAJOR}.$((MINOR + 1)).0" ;;
+              *)     NEW="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
+            esac
+          fi
+          if ! echo "${NEW}" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version ${NEW} isn't in the form X.Y.Z."
+            exit 1
+          fi
+          if git rev-parse -q --verify "refs/tags/v${NEW}" >/dev/null; then
+            echo "::error::Tag v${NEW} already exists."
+            exit 1
+          fi
+          echo "Releasing ${CURRENT} -> ${NEW}"
+          echo "${NEW}" > VERSION
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Release v${NEW}"
+          git tag "v${NEW}"
+          git push origin HEAD:main "v${NEW}"
+
+      - name: Check tag matches VERSION
+        id: version
+        run: |
+          VERSION=$(tr -d '[:space:]' < VERSION)
+          TAG="v${VERSION}"
+          if [ "${GITHUB_EVENT_NAME}" = "push" ] && [ "${GITHUB_REF_NAME}" != "${TAG}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match VERSION file (${VERSION}). Expected tag ${TAG}."
+            exit 1
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Build
         run: ./build.sh
 
       - name: Package
-        run: ditto -c -k --keepParent build/Soroban.app "Soroban-${GITHUB_REF_NAME}.zip"
+        run: ditto -c -k --keepParent build/Soroban.app "Soroban-${{ steps.version.outputs.tag }}.zip"
 
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           cat > notes.md <<'EOF'
           ## Install
 
-          1. Download `Soroban-${{ github.ref_name }}.zip` below and unzip it.
+          1. Download `Soroban-${{ steps.version.outputs.tag }}.zip` below and unzip it.
           2. Move `Soroban.app` to `~/Applications`.
           3. The app isn't notarized, so macOS will block it the first time. Clear the quarantine flag:
              ```sh
@@ -47,8 +99,8 @@ jobs:
 
           Requires macOS 13 or later.
           EOF
-          gh release create "${GITHUB_REF_NAME}" "Soroban-${GITHUB_REF_NAME}.zip" \
-            --title "Soroban ${GITHUB_REF_NAME}" \
+          gh release create "${TAG}" "Soroban-${TAG}.zip" \
+            --title "Soroban ${TAG}" \
             --notes-file notes.md \
             --generate-notes \
             --verify-tag
