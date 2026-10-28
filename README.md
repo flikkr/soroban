@@ -24,6 +24,14 @@ Requires macOS 13 or later, and a [LiteLLM proxy](https://docs.litellm.ai/docs/s
 
 ## Install
 
+```sh
+curl -fsSL https://raw.githubusercontent.com/flikkr/soroban/main/install.sh | sh
+```
+
+This downloads the latest release, installs it to `~/Applications/Soroban.app` and opens it. Run it again to update.
+
+### Build from source
+
 You need the Xcode command line tools (`xcode-select --install`).
 
 ```sh
