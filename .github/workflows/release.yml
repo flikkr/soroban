@@ -81,7 +81,13 @@ jobs:
         run: ./build.sh
 
       - name: Package
-        run: ditto -c -k --keepParent build/Soroban.app "Soroban-${{ steps.version.outputs.tag }}.zip"
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          mkdir dmg
+          cp -R build/Soroban.app dmg/
+          ln -s /Applications dmg/Applications
+          hdiutil create -volname Soroban -srcfolder dmg -fs HFS+ -format UDZO -ov "Soroban-${TAG}.dmg"
 
       - name: Create release
         env:
@@ -91,18 +97,27 @@ jobs:
           cat > notes.md <<'EOF'
           ## Install
 
-          1. Download `Soroban-${{ steps.version.outputs.tag }}.zip` below and unzip it.
-          2. Move `Soroban.app` to `~/Applications`.
-          3. The app isn't notarized, so macOS will block it the first time. Clear the quarantine flag:
+          ```sh
+          curl -fsSL https://raw.githubusercontent.com/flikkr/soroban/main/install.sh | sh
+          ```
+
+          Or install it by hand:
+
+          1. Download `Soroban-${{ steps.version.outputs.tag }}.dmg` below, open it and drag `Soroban.app` to `Applications`.
+          2. The app isn't notarized, so macOS will block it the first time. Clear the quarantine flag:
              ```sh
-             xattr -dr com.apple.quarantine ~/Applications/Soroban.app
+             xattr -dr com.apple.quarantine /Applications/Soroban.app
              ```
-          4. Open it: `open ~/Applications/Soroban.app`
+          3. Open it: `open /Applications/Soroban.app`
 
           Requires macOS 13 or later.
+
           EOF
-          gh release create "${TAG}" "Soroban-${TAG}.zip" \
+          # GitHub's generated notes, without the "New Contributors" section.
+          gh api "repos/${GITHUB_REPOSITORY}/releases/generate-notes" -f tag_name="${TAG}" --jq .body \
+            | awk '/^## New Contributors/ { skip = 1; next } /^\*\*Full Changelog\*\*/ { skip = 0 } !skip' \
+            >> notes.md
+          gh release create "${TAG}" "Soroban-${TAG}.dmg" \
             --title "Soroban ${TAG}" \
             --notes-file notes.md \
-            --generate-notes \
             --verify-tag

@@ -12,7 +12,7 @@ if [ "$(uname)" != "Darwin" ]; then
 fi
 
 URL=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" \
-    | grep -o '"browser_download_url": *"[^"]*\.zip"' \
+    | grep -o '"browser_download_url": *"[^"]*\.dmg"' \
     | head -n 1 \
     | sed 's/.*"\(https[^"]*\)"/\1/')
 
@@ -22,16 +22,16 @@ if [ -z "$URL" ]; then
 fi
 
 TMP=$(mktemp -d)
-trap 'rm -rf "$TMP"' EXIT
+trap 'hdiutil detach -quiet "$TMP/mnt" 2>/dev/null; rm -rf "$TMP"' EXIT
 
 echo "Downloading $URL"
-curl -fL --progress-bar -o "$TMP/Soroban.zip" "$URL"
-ditto -x -k "$TMP/Soroban.zip" "$TMP"
+curl -fL --progress-bar -o "$TMP/Soroban.dmg" "$URL"
+hdiutil attach -quiet -nobrowse -readonly -mountpoint "$TMP/mnt" "$TMP/Soroban.dmg"
 
 pkill -x Soroban 2>/dev/null || true
 mkdir -p "$DEST"
 rm -rf "$DEST/Soroban.app"
-mv "$TMP/Soroban.app" "$DEST/"
+cp -R "$TMP/mnt/Soroban.app" "$DEST/"
 # The app isn't notarized, so clear the quarantine flag in case it was set.
 xattr -dr com.apple.quarantine "$DEST/Soroban.app" 2>/dev/null || true
 

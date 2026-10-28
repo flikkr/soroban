@@ -72,7 +72,7 @@ Budget alerts are sent once per budget period, the first time you pass each thre
 
 The version number lives in [`VERSION`](VERSION). `build.sh` writes it into the app, along with a build number (the git commit count). It's shown in **Settings → General**.
 
-To release a new version, go to **Actions → Release → Run workflow** on GitHub (or run `gh workflow run release.yml -f bump=minor`). Pick `patch`, `minor` or `major`, or type an exact version. The workflow bumps `VERSION`, commits it to `main`, tags it (e.g. `v1.1.0`), builds the app and publishes a GitHub release with `Soroban-v1.1.0.zip` attached.
+To release a new version, go to **Actions → Release → Run workflow** on GitHub (or run `gh workflow run release.yml -f bump=minor`). Pick `patch`, `minor` or `major`, or type an exact version. The workflow bumps `VERSION`, commits it to `main`, tags it (e.g. `v1.1.0`), builds the app and publishes a GitHub release with `Soroban-v1.1.0.dmg` attached.
 
 You can still release by hand: bump `VERSION`, commit, then tag and push the tag (`git tag v1.1.0 && git push origin v1.1.0`). The workflow fails if the tag doesn't match `VERSION`.
 
