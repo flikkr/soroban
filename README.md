@@ -2,7 +2,11 @@
 
 # Soroban
 
+[![Latest release](https://img.shields.io/github/v/release/flikkr/soroban?label=version)](https://github.com/flikkr/soroban/releases/latest)
+
 A small macOS menu bar app that shows how much of your [LiteLLM](https://docs.litellm.ai/) budget you've spent.
+
+*Soroban* (算盤) is the Japanese word for abacus, a fitting name for a little tool that keeps count of your spending.
 
 - **Menu bar pill** that fills up as you spend, with the amount inside. Green under 50% of your budget, orange from 50%, red from 90%.
 - **Menu** with spent / remaining, when the budget resets, and when it last updated.
