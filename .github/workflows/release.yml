@@ -57,10 +57,12 @@ jobs:
             exit 1
           fi
           echo "Releasing ${CURRENT} -> ${NEW}"
-          echo "${NEW}" > VERSION
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Release v${NEW}"
+          if [ "${NEW}" != "${CURRENT}" ]; then
+            echo "${NEW}" > VERSION
+            git commit -am "Release v${NEW}"
+          fi
           git tag "v${NEW}"
           git push origin HEAD:main "v${NEW}"
 
